@@ -1,0 +1,29 @@
+{
+  "version": 2,
+  "dgSpecHash": "XzP2x07iaY9UPd3YAgMYv0JtkdrGiOfe2ZF3N9Hf99AtUahNr+7ozcTnqQcvKDQK/bN46s05o9bgt25fo+g3Mw==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\Tom\\source\\repos\\CS2DontBlindMe\\CS2DontBlindMe\\CS2DontBlindMe.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Tom\\.nuget\\packages\\counterstrike2gsi\\1.0.3.8403\\counterstrike2gsi.1.0.3.8403.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.csharp\\4.7.0\\microsoft.csharp.4.7.0.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.0-preview.4.24266.19\\microsoft.extensions.configuration.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\9.0.0-preview.4.24266.19\\microsoft.extensions.configuration.abstractions.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.configuration.binder\\9.0.0-preview.4.24266.19\\microsoft.extensions.configuration.binder.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.dependencyinjection\\9.0.0-preview.4.24266.19\\microsoft.extensions.dependencyinjection.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.0-preview.4.24266.19\\microsoft.extensions.dependencyinjection.abstractions.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.logging\\9.0.0-preview.4.24266.19\\microsoft.extensions.logging.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.0-preview.4.24266.19\\microsoft.extensions.logging.abstractions.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.logging.configuration\\9.0.0-preview.4.24266.19\\microsoft.extensions.logging.configuration.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.logging.console\\9.0.0-preview.4.24266.19\\microsoft.extensions.logging.console.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.options\\9.0.0-preview.4.24266.19\\microsoft.extensions.options.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.options.configurationextensions\\9.0.0-preview.4.24266.19\\microsoft.extensions.options.configurationextensions.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.0-preview.4.24266.19\\microsoft.extensions.primitives.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\system.codedom\\9.0.0-preview.4.24266.19\\system.codedom.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\system.data.datasetextensions\\4.5.0\\system.data.datasetextensions.4.5.0.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\system.management\\9.0.0-preview.4.24266.19\\system.management.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\system.text.encodings.web\\9.0.0-preview.4.24266.19\\system.text.encodings.web.9.0.0-preview.4.24266.19.nupkg.sha512",
+    "C:\\Users\\Tom\\.nuget\\packages\\system.text.json\\9.0.0-preview.4.24266.19\\system.text.json.9.0.0-preview.4.24266.19.nupkg.sha512"
+  ],
+  "logs": []
+}
