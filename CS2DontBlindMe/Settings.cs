@@ -11,7 +11,7 @@ namespace CS2DontBlindMe;
 
 public class Settings
 {
-    public static string SettingsPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "/settings.json";
+    public static string SettingsPath = Path.Combine(System.AppContext.BaseDirectory, "settings.json");
 
     public int MinimumThresholdForFlashAmount { get; set; } = 0;
     public LaptopBrightnessChanger LaptopBrightnessChanger { get; set; } = new();
@@ -37,18 +37,16 @@ public class Settings
 
     public static Settings LoadSettings()
     {
-        var settingsPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!, "settings.json");
-
-        if (!File.Exists(settingsPath))
+        if (!File.Exists(SettingsPath))
         {
-            File.WriteAllText(settingsPath, JsonConvert.SerializeObject(new Settings()));
+            File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new Settings()));
         }
 
-        var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(settingsPath));
+        var settings = JsonConvert.DeserializeObject<Settings>(File.ReadAllText(SettingsPath));
 
         if (settings is null)
         {
-            throw new InvalidDataException($"Invalid settings file encountered in {settingsPath}");
+            throw new InvalidDataException($"Invalid settings file encountered in {SettingsPath}");
         }
 
         return settings;

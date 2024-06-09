@@ -1,0 +1,10 @@
+# configuration file for dotnet-releaser
+profile = "custom"
+[msbuild]
+project = "CS2DontBlindMe.sln"
+[github]
+user = "RIASorg"
+repo = "CS2DontBlindMe"
+[[pack]]
+rid = ["win-x64"]
+kinds = ["zip"]
