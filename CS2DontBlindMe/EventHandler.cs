@@ -44,9 +44,9 @@ public class EventHandler : IDisposable
 
     private DateTime LastUpdate;
 
-    private Timer UpdateWatcher;
+    private Timer UpdateWatcher = null!;
 
-    private readonly IBrightnessChanger BrightnessChanger;
+    private readonly IBrightnessChanger BrightnessChanger = null!;
     private readonly ILogger Logger;
 
     public EventHandler(GameStateListener gsl, int minimumFlashAmount, int minimumBrightness, IBrightnessChanger brightnessChanger, ILogger logger)
