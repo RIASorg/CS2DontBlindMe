@@ -15,12 +15,18 @@ If you have multiple monitors connected that all use the same API, the app will 
 
 When you run the app and get flashed in game, the app will automatically dim your monitors to not destroy your eyes in real-life. The result is usually a grey-like effect.
 
+![{60F7876D-1F7E-4635-AE02-B73FB38CC4A9}](https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/4b9bb5cb-c65c-4c35-b360-90682edffed2)
+
+## How it controls brightness
+
 Since hardware manufacturers have a hard-on for making software developers lives' much much harder, there are currently 3(!) APIs implemented in this app, which can(!) control your brightness.
 
 These are:
 - DDC: This is using the internal bus from the GPU to the Monitor to change the brightness. Sometimes, your monitor may refuse to register as a DDC-compatible device. Usually this can be fixed by simply turning the monitor on/off again (and restarting this app).
 - WMI: For monitors that are integrated (e.g. laptops), the manufacturer may have registered a few settings in the Windows-Management-Interface. This can be used to set the brightness, but will never(!) be available if you are running an external monitor or TV.
 - Gamma Ramp: This one is the OG method that csgo_dont_blind_me used. It basically changes the way gamma works and thus interfers with other applications that make use of this (e.g. f.lux). If this app reports using this, then usually you should try the fix for DDC, since most monitors do support DDC and it's better than gamma ramp. Also, Windows may limit the minimum brightness to a higher threshold, so you should test if this works, and otherwise up the minimum brightness setting (described below).
+
+## Settings
 
 The app will create two configuration files:
 - A GSI (Game State Integration) config file in the CS2 game directory, which will tell CS2 where it can find the app
