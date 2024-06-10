@@ -5,6 +5,12 @@ project = "CS2DontBlindMe.sln"
 [github]
 user = "RIASorg"
 repo = "CS2DontBlindMe"
+[nuget]
+publish = false
+[brew]
+publish = false
+[scoop]
+publish = false
 [[pack]]
 rid = ["win-x64"]
 kinds = ["zip"]
