@@ -1,5 +1,7 @@
 # CS2 Please Don't Blind Me
 
+Inspired by the old [CSGO Don't Blind Me](https://github.com/dev7355608/csgo_dont_blind_me)
+
 Protect your eyes with this one nifty trick :)
 
 ## Installation
