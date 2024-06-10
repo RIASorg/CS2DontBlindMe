@@ -4,6 +4,9 @@ Inspired by the old [CSGO Don't Blind Me](https://github.com/dev7355608/csgo_don
 
 Protect your eyes with this one nifty trick :)
 
+### Will NOT get you VAC banned
+It's just using ready-made CS2/CSGO Game State Integration API. This API is also used by tournament organizers or third-party clients.
+
 ## Installation
 
 - Download a release from the [Release](https://github.com/RIASorg/CS2DontBlindMe/releases) page.
