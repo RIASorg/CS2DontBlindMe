@@ -43,6 +43,8 @@ info: DontBlindMe[0] Changing brightness: 1
 
 ````
 
+![Demo.mp4](doc/demo.mp4)
+
 ## How it controls brightness
 
 Since hardware manufacturers have a hard-on for making software developers lives' much much harder, there are currently 3(!) APIs implemented in this app, which can(!) control your brightness.
