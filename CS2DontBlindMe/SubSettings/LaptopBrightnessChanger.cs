@@ -1,3 +1,3 @@
 ﻿namespace CS2DontBlindMe.SubSettings;
 
-public record LaptopBrightnessChanger(bool Enabled = false);
+public record LaptopBrightnessChanger(bool Enabled = true);
