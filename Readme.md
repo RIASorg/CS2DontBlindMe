@@ -43,7 +43,8 @@ info: DontBlindMe[0] Changing brightness: 1
 
 ````
 
-![Demo.mp4](doc/demo.mp4)
+https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/11a9f4eb-a5ef-4d59-9ffb-6b6bcd607b29
+
 
 ## How it controls brightness
 
