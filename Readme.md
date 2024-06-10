@@ -43,7 +43,8 @@ info: DontBlindMe[0] Changing brightness: 1
 
 ````
 
-https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/11a9f4eb-a5ef-4d59-9ffb-6b6bcd607b29
+Here's a deep-fried GIF demo, there's also a proper [video](doc/demo.mp4)
+![UnbenanntesProjekt-ezgif com-cut](https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/5837f577-8c9e-4541-8ac1-b4144ee1f6ca)
 
 
 ## How it controls brightness
