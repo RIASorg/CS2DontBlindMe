@@ -13,9 +13,35 @@ Make sure you only have one monitor connected, or otherwise make sure both monit
 Otherwise this app may choose the wrong API and thus dim the wrong monitor.
 If you have multiple monitors connected that all use the same API, the app will dim all monitors.
 
-When you run the app and get flashed in game, the app will automatically dim your monitors to not destroy your eyes in real-life. The result is usually a grey-like effect.
+When you run the app and get flashed in game, the app will automatically dim your monitors to not destroy your eyes in real-life. The result is usually a grey-like effect. 
+The brightness is relative to your chosen brightness, so when you normally have your monitor at 70% brightness, when it sets brightness to "1" it will set it to 70%.
 
-![{60F7876D-1F7E-4635-AE02-B73FB38CC4A9}](https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/4b9bb5cb-c65c-4c35-b360-90682edffed2)
+````bash
+info: DontBlindMe[0] Settings path: C:\Users\XXX\Downloads\CS2DontBlindMe\settings.json
+info: DontBlindMe[0] Minimum Flash Amount: 0/255                                          
+info: DontBlindMe[0] Minimum Monitor Brightness: 10/100                                   
+info: DontBlindMe[0] Log Level: 2(Information) (possible values: 0 (highest) - 6 (lowest))
+info: DontBlindMe[0] GSI Listener Port: 3456                                              
+info: DontBlindMe[0] Using DDC/CI for monitor, brightness(initial/min/max): Dell P2422H(DisplayPort), 75/0/100
+info: DontBlindMe[0] Brightness Changer: WindowsExternalMonitorBrightnessChanger
+info: DontBlindMe[0] Integration config file: T:\SteamLibrary\steamapps\common\Counter-Strike Global Offensive\game\csgo\cfg\gamestate_integration_CS2DontBlindMe.cfg
+info: DontBlindMe[0] Listening for GSI events. Press any key to quit...                                                                                              
+info: DontBlindMe[0] Changing brightness: 1
+info: DontBlindMe[0] Changing brightness: 0.1
+info: DontBlindMe[0] Changing brightness: 0.21176471
+info: DontBlindMe[0] Changing brightness: 0.33333334
+info: DontBlindMe[0] Changing brightness: 0.47058824
+info: DontBlindMe[0] Changing brightness: 0.57254905
+info: DontBlindMe[0] Changing brightness: 0.6666667
+info: DontBlindMe[0] Changing brightness: 0.7647059
+info: DontBlindMe[0] Changing brightness: 0.8392157
+info: DontBlindMe[0] Changing brightness: 0.89411765
+info: DontBlindMe[0] Changing brightness: 0.9372549
+info: DontBlindMe[0] Changing brightness: 0.96862745
+info: DontBlindMe[0] Changing brightness: 0.9882353
+info: DontBlindMe[0] Changing brightness: 1
+
+````
 
 ## How it controls brightness
 
