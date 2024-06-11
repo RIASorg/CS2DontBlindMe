@@ -1,5 +1,6 @@
 ﻿#region using
 
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Extensions.Logging;
@@ -99,6 +100,7 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
         return success;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private bool SetBrightness(MonitorInfo monitor, float brightness)
     {
         if (monitor.InitialGamma is { } initialGamma)

@@ -1,5 +1,6 @@
 ﻿#region using
 
+using System.Runtime.CompilerServices;
 using CounterStrike2GSI;
 using CounterStrike2GSI.EventMessages;
 using Microsoft.Extensions.Logging;
@@ -169,6 +170,7 @@ public class EventHandler : IDisposable
         LastUpdate = DateTime.Now;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private void UpdateBrightness()
     {
         var wantedBrightness = 1.0f;

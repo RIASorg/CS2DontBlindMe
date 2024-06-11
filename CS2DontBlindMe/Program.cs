@@ -4,6 +4,7 @@ using CounterStrike2GSI;
 using CounterStrike2GSI.Utils;
 using CS2DontBlindMe;
 using Microsoft.Extensions.Logging;
+using NReco.Logging.File;
 using EventHandler = CS2DontBlindMe.EventHandler;
 
 #endregion
@@ -13,10 +14,9 @@ var logger = LoggerFactory.Create(builder =>
 {
     builder.SetMinimumLevel((LogLevel)settings.LogLevel);
     builder.AddSimpleConsole(options => options.SingleLine = true);
+    builder.AddFile("app.log", append: false);
 }).CreateLogger("DontBlindMe");
 settings.PrintInformation(logger);
-
-// TODO: LG TV https://github.com/Maassoft/ColorControl/blob/master/ColorControl/Services/LG/LgService.cs
 
 var brightnessChanger = BrightnessChangerChooser.GetBrightnessChanger(logger, settings.LaptopBrightnessChanger, settings.MonitorBrightnessChanger);
 if (brightnessChanger is null)
