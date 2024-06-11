@@ -1,6 +1,11 @@
 # CS2 Please Don't Blind Me
 
+Inspired by the old [CSGO Don't Blind Me](https://github.com/dev7355608/csgo_dont_blind_me)
+
 Protect your eyes with this one nifty trick :)
+
+### Will NOT get you VAC banned
+It's just using ready-made CS2/CSGO Game State Integration API. This API is also used by tournament organizers or third-party clients.
 
 ## Installation
 
@@ -43,7 +48,7 @@ info: DontBlindMe[0] Changing brightness: 1
 
 ````
 
-Here's a deep-fried GIF demo, there's also a proper [video](doc/demo.mp4)
+Here's a deep-fried GIF demo (upload restrictions by Github), but there's also a proper [video](doc/demo.mp4):
 ![UnbenanntesProjekt-ezgif com-cut](https://github.com/RIASorg/CS2DontBlindMe/assets/9307432/5837f577-8c9e-4541-8ac1-b4144ee1f6ca)
 
 
@@ -79,4 +84,18 @@ The app uses these game events (in particular, player killed, provider changed, 
 The API to use to dim your monitor is automatically detected by querying Windows for information, and trying out the APIs to see if the monitor responds.
 
 It then queries the API for the current brightness level, and then adjusts that down when the player is flashed. It will *never* turn the brightness up higher than the brightness set by the user.
+
+## Building it yourself
+
+Check out this repo, then either build it with dotnet, or use the [dotnet-releaser](https://github.com/xoofx/dotnet-releaser) tool I use.
+````powershell
+dotnet tool install --global dotnet-releaser
+dotnet-releaser build --force dotnet-releaser.toml
+````
+The resulting zip will be in the subfolder `artifacts-dotnet-releaser`.
+
+## Contributing
+
+I'd welcome any PRs or suggestions. I'm also open to expanding this to more than just "anti-flash", but I don't have any big ideas right now (besides a bomb timer overlay or something).
+There's two issues already open about LGTV API support and Linux support. If anyone's particularly interested in either a PR would be welcomed.
 
