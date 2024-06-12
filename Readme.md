@@ -59,7 +59,7 @@ Here's a deep-fried GIF demo (upload restrictions by Github), but there's also a
 
 ## How it controls brightness
 
-Since hardware manufacturers have a hard-on for making software developers lives' much much harder, there are currently 3(!) APIs implemented in this app, which can(!) control your brightness.
+Since hardware manufacturers have a hard-on for making software developers' lives much much harder, there are currently 3(!) APIs implemented in this app, which can(!) control your brightness.
 
 These are:
 - DDC: This is using the internal bus from the GPU to the Monitor to change the brightness. Sometimes, your monitor may refuse to register as a DDC-compatible device. Usually this can be fixed by simply turning the monitor on/off again (and restarting this app).
