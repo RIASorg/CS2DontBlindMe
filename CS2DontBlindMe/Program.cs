@@ -3,6 +3,7 @@
 using CounterStrike2GSI;
 using CounterStrike2GSI.Utils;
 using CS2DontBlindMe;
+using Lunet.Extensions.Logging.SpectreConsole;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
 using EventHandler = CS2DontBlindMe.EventHandler;
@@ -15,7 +16,12 @@ try
     var logger = LoggerFactory.Create(builder =>
     {
         builder.SetMinimumLevel((LogLevel)settings.LogLevel);
-        builder.AddSimpleConsole(options => options.SingleLine = true);
+        builder.AddSpectreConsole(new SpectreConsoleLoggerOptions
+        {
+            IncludeCategory = false,
+            IncludeEventId = false,
+            IncludeNewLineBeforeMessage = false
+        });
         builder.AddFile("app.log", false);
     }).CreateLogger("DontBlindMe");
     settings.PrintInformation(logger);
@@ -65,8 +71,8 @@ catch (Exception e)
 int ErrorExit(int exitCode)
 {
     Console.WriteLine(
-        "Waiting for key press after encountering error, copy any relevant lines from the console above or from the app.log file in this directory: {0}",
-        AppContext.BaseDirectory
+        "Waiting for key press after encountering error, copy any relevant lines from the console above or from this file: {0}",
+        Path.Combine(AppContext.BaseDirectory, "app.log")
     );
     Console.ReadKey();
     return exitCode;

@@ -25,8 +25,8 @@
 
     <ItemGroup>
       <PackageReference Include="CounterStrike2GSI" Version="1.0.3.8403" />
+      <PackageReference Include="Lunet.Extensions.Logging.SpectreConsole" Version="1.1.0" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.0-preview.4.24266.19" />
-      <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="9.0.0-preview.4.24266.19" />
       <PackageReference Include="MinVer" Version="5.0.0">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
