@@ -1,6 +1,5 @@
 ﻿#region using
 
-using System.Reflection;
 using CS2DontBlindMe.SubSettings;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -11,7 +10,7 @@ namespace CS2DontBlindMe;
 
 public class Settings
 {
-    public static string SettingsPath = Path.Combine(System.AppContext.BaseDirectory, "settings.json");
+    public static string SettingsPath = Path.Combine(AppContext.BaseDirectory, "settings.json");
 
     public int MinimumThresholdForFlashAmount { get; set; } = 0;
     public LaptopBrightnessChanger LaptopBrightnessChanger { get; set; } = new();
