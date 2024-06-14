@@ -1,5 +1,6 @@
 ﻿#region using
 
+using System.Runtime.InteropServices;
 using CounterStrike2GSI;
 using CounterStrike2GSI.Utils;
 using CS2DontBlindMe;
@@ -10,28 +11,38 @@ using EventHandler = CS2DontBlindMe.EventHandler;
 
 #endregion
 
+if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+{
+    Console.WriteLine("Unfortunately this program is currently only available on Windows");
+    return ErrorExit(-2);
+}
+
 try
 {
     var settings = Settings.LoadSettings();
-    var logger = LoggerFactory.Create(builder =>
+    var factory = LoggerFactory.Create(builder =>
     {
         builder.SetMinimumLevel((LogLevel)settings.LogLevel);
         builder.AddSpectreConsole(new SpectreConsoleLoggerOptions
         {
-            IncludeCategory = false,
             IncludeEventId = false,
             IncludeNewLineBeforeMessage = false
         });
         builder.AddFile("app.log", false);
-    }).CreateLogger("DontBlindMe");
+    });
+    var logger = factory.CreateLogger("DontBlindMe");
     settings.PrintInformation(logger);
 
-    var brightnessChanger = BrightnessChangerChooser.GetBrightnessChanger(logger, settings.LaptopBrightnessChanger, settings.MonitorBrightnessChanger);
+    var brightnessChanger = BrightnessChangerChooser.GetBrightnessChanger(factory, settings.LaptopBrightnessChanger, settings.MonitorBrightnessChanger);
     if (brightnessChanger is null)
     {
-        logger.LogCritical("Brightness changer does not work with your hardware configuration");
+        logger.LogCritical(
+            "Brightness changer does not work with your hardware configuration. Some log lines above may contain information to resolve the issue.");
         return ErrorExit(5);
     }
+
+    brightnessChanger.PrintConfiguration();
+    brightnessChanger.TestResponsiveness();
 
     var gsl = new GameStateListener(settings.Port);
     using var eventHandler = new EventHandler(gsl, settings.MinimumThresholdForFlashAmount, settings.MinimumBrightness, brightnessChanger, logger);

@@ -1,5 +1,6 @@
 ﻿#region using
 
+using System.Diagnostics;
 using System.Management;
 using System.Runtime.Versioning;
 using Microsoft.Extensions.Logging;
@@ -12,24 +13,62 @@ namespace CS2DontBlindMe.BrightnessChangers;
 [SupportedOSPlatform("windows")]
 public class WindowsLaptopBrightnessChanger : IBrightnessChanger
 {
-    private readonly int nominalBrightness;
-    private readonly ManagementObject monitorBrightnessMethods = null!;
-    private readonly ILogger logger;
+    private int nominalBrightness;
+    private ManagementObject monitorBrightnessMethods = null!;
+    private ILogger logger = null!;
 
-    public WindowsLaptopBrightnessChanger(ILogger logger)
+    private void Set(int brightness)
+    {
+        var args = new object[] { 1, brightness };
+        monitorBrightnessMethods.InvokeMethod("WmiSetBrightness", args);
+    }
+
+    public bool UpdateBrightness(float percentage)
+    {
+        Set((int)(nominalBrightness * percentage));
+        return true;
+    }
+
+    public void SetLogger(ILogger logger)
     {
         this.logger = logger;
+    }
+
+    public bool TryInitialize()
+    {
         nominalBrightness = GetInitialBrightness();
-        if (nominalBrightness > 0)
+        var monitor = GetMonitor();
+        if (monitor is { } mon)
         {
-            var monitor = GetMonitor();
-            if (monitor is { } mon)
-            {
-                monitorBrightnessMethods = mon;
-            }
+            monitorBrightnessMethods = mon;
         }
 
+        return nominalBrightness > 0 && monitor is not null && UpdateBrightness(1.0f);
+    }
+
+    public void TestResponsiveness()
+    {
+        var sw = Stopwatch.StartNew();
+        UpdateBrightness(0.0f);
+        UpdateBrightness(1.0f);
+        sw.Stop();
+        logger.LogInformation("Changing brightness of laptop took {time}ms", sw.ElapsedMilliseconds);
+    }
+
+    public void PrintConfiguration()
+    {
         logger.LogInformation("Initial brightness recorded as: {brightness}", nominalBrightness);
+    }
+
+    public void DiagnoseIssues()
+    {
+        logger.LogDebug("This brightness changer only works with Laptops. Check if your manufacturer supports controlling the laptop screen via software.");
+    }
+
+    public void Dispose()
+    {
+        monitorBrightnessMethods.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     private int GetInitialBrightness()
@@ -46,7 +85,7 @@ public class WindowsLaptopBrightnessChanger : IBrightnessChanger
         }
         catch (Exception e)
         {
-            logger.LogCritical("Could not get current brightness setting: {message}", e.Message);
+            logger.LogDebug("Could not get current brightness setting: {message}", e.Message);
         }
 
         return 0;
@@ -68,32 +107,9 @@ public class WindowsLaptopBrightnessChanger : IBrightnessChanger
         }
         catch (Exception e)
         {
-            logger.LogCritical("Could not get monitor: {message}", e.Message);
+            logger.LogDebug("Could not get monitor: {message}", e.Message);
         }
 
         return null;
-    }
-
-    private void Set(int brightness)
-    {
-        var args = new object[] { 1, brightness };
-        monitorBrightnessMethods.InvokeMethod("WmiSetBrightness", args);
-    }
-
-    public bool UpdateBrightness(float percentage)
-    {
-        Set((int)(nominalBrightness * percentage));
-        return true;
-    }
-
-    public bool CanWork()
-    {
-        return nominalBrightness > 0;
-    }
-
-    public void Dispose()
-    {
-        monitorBrightnessMethods.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

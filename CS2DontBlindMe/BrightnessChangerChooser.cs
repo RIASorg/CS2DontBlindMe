@@ -1,6 +1,7 @@
 ﻿#region using
 
-using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+using System.Runtime.Versioning;
 using CS2DontBlindMe.BrightnessChangers;
 using CS2DontBlindMe.SubSettings;
 using Microsoft.Extensions.Logging;
@@ -11,45 +12,33 @@ namespace CS2DontBlindMe;
 
 public static class BrightnessChangerChooser
 {
-    public static IBrightnessChanger? GetBrightnessChanger(ILogger logger, LaptopBrightnessChanger laptop, MonitorBrightnessChanger monitor)
+    [SupportedOSPlatform("windows")]
+    public static IBrightnessChanger? GetBrightnessChanger(ILoggerFactory factory, LaptopBrightnessChanger laptop, MonitorBrightnessChanger monitor)
     {
-        IBrightnessChanger? brightnessChanger = null;
-
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+        if (TryBrightnessChanger<WindowsExternalMonitorBrightnessChanger>(factory, out var monitorBrightnessChanger))
         {
-            if (monitor.Enabled && brightnessChanger == null)
-            {
-                brightnessChanger = new WindowsExternalMonitorBrightnessChanger(logger);
-                if (!TryBrightnessChanger(brightnessChanger, logger))
-                {
-                    brightnessChanger = null;
-                }
-            }
-
-            if (laptop.Enabled && brightnessChanger == null)
-            {
-                brightnessChanger = new WindowsLaptopBrightnessChanger(logger);
-                if (!TryBrightnessChanger(brightnessChanger, logger))
-                {
-                    brightnessChanger = null;
-                }
-            }
-
-            return brightnessChanger;
+            return monitorBrightnessChanger;
         }
 
-        logger.LogCritical("Unfortunately changing brightness on anything but Windows is currently not supported");
+
+        if (TryBrightnessChanger<WindowsLaptopBrightnessChanger>(factory, out var laptopBrightnessChanger))
+        {
+            return laptopBrightnessChanger;
+        }
+
+        monitorBrightnessChanger.DiagnoseIssues();
+        laptopBrightnessChanger.DiagnoseIssues();
+
         return null;
     }
 
-    private static bool TryBrightnessChanger(IBrightnessChanger changer, ILogger log)
+    [MethodImpl(MethodImplOptions.AggressiveOptimization)]
+    private static bool TryBrightnessChanger<TBrightnessChanger>(ILoggerFactory factory, out TBrightnessChanger brightnessChanger)
+        where TBrightnessChanger : IBrightnessChanger
     {
-        if (!changer.CanWork())
-        {
-            log.LogError("Brightness changer does not work with your hardware configuration: {changer}", changer.GetType().Name);
-            return false;
-        }
+        brightnessChanger = Activator.CreateInstance<TBrightnessChanger>();
+        brightnessChanger.SetLogger(factory.CreateLogger(typeof(TBrightnessChanger).Name));
 
-        return true;
+        return brightnessChanger.TryInitialize();
     }
 }

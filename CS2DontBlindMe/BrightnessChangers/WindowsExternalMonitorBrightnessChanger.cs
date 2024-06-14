@@ -1,5 +1,6 @@
 ﻿#region using
 
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -13,9 +14,12 @@ namespace CS2DontBlindMe.BrightnessChangers;
 [SupportedOSPlatform("windows")]
 public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
 {
-    private readonly ILogger logger;
+    private ILogger logger;
 
     #region DllImport
+
+    [DllImport("kernel32.dll", EntryPoint = "GetLastError")]
+    private static extern int GetLastError();
 
     [DllImport("dxva2.dll", EntryPoint = "GetNumberOfPhysicalMonitorsFromHMONITOR")]
     [return: MarshalAs(UnmanagedType.Bool)]
@@ -69,19 +73,57 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
     [DllImport("gdi32.dll")]
     private static extern bool SetDeviceGammaRamp(IntPtr handle, ref GammaRamp lpRamp);
 
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+    private struct PhysicalMonitor
+    {
+        public IntPtr hPhysicalMonitor;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+        public string szPhysicalMonitorDescription;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    private struct Rect
+    {
+        public int left;
+        public int top;
+        public int right;
+        public int bottom;
+    }
+
+    private class MonitorInfo
+    {
+        public string Description { get; init; }
+        public uint MinValue { get; init; }
+        public uint MaxValue { get; init; }
+        public IntPtr Handle { get; init; }
+        public uint InitialValue { get; init; }
+        public GammaRamp? InitialGamma { get; init; }
+        public GammaRamp? CurrentGamma { get; init; }
+    }
+
     #endregion
 
     private IReadOnlyCollection<MonitorInfo> Monitors { get; set; } = new List<MonitorInfo>();
 
-    public WindowsExternalMonitorBrightnessChanger(ILogger logger)
+    public void SetLogger(ILogger logger)
     {
         this.logger = logger;
-        UpdateMonitors();
     }
 
-    public bool CanWork()
+    public bool TryInitialize()
     {
+        UpdateMonitors();
         return Monitors.Count > 0;
+    }
+
+    public void TestResponsiveness()
+    {
+        var sw = Stopwatch.StartNew();
+        UpdateBrightness(0.0f);
+        UpdateBrightness(1.0f);
+        sw.Stop();
+        logger.LogInformation("Changing brightness of monitor{s} took {time}ms", Monitors.Count > 1 ? "s" : "", sw.ElapsedMilliseconds);
     }
 
     public bool UpdateBrightness(float percentage)
@@ -100,12 +142,88 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
         return success;
     }
 
+    public void DiagnoseIssues()
+    {
+        EnumDisplayMonitors(IntPtr.Zero, IntPtr.Zero, (IntPtr hMonitor, IntPtr hdcMonitor, ref Rect lprcMonitor, IntPtr dwData) =>
+        {
+            uint physicalMonitorsCount = 0;
+            if (!GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, ref physicalMonitorsCount))
+            {
+                logger.LogError("Cannot get monitor count, error code: {code}", GetLastError());
+                logger.LogError("Do you have multiple monitors connected? Try with only one of them");
+                return true;
+            }
+
+            var physicalMonitors = new PhysicalMonitor[physicalMonitorsCount];
+            if (!GetPhysicalMonitorsFromHMONITOR(hMonitor, physicalMonitorsCount, physicalMonitors))
+            {
+                logger.LogError("Cannot get physical monitors from HMONITOR, error code: {code}", GetLastError());
+                logger.LogError("Do you have multiple monitors connected? Try with only one of them");
+                return true;
+            }
+
+            foreach (var physicalMonitor in physicalMonitors)
+            {
+                uint monitorCapabilities = 0;
+                uint colourTemperatures = 0;
+                uint minValue = 0, currentValue = 0, maxValue = 0;
+                var gammaRamp = new GammaRamp();
+                if (
+                    (
+                        GetMonitorCapabilities(physicalMonitor.hPhysicalMonitor, ref monitorCapabilities, ref colourTemperatures)
+                        && GetMonitorBrightness(physicalMonitor.hPhysicalMonitor, ref minValue, ref currentValue, ref maxValue)
+                    )
+                    || GetDeviceGammaRamp(physicalMonitor.hPhysicalMonitor, ref gammaRamp)
+                )
+                {
+                    continue;
+                }
+
+                logger.LogError(
+                    "DDC not supported by the monitor, error code: {name}, {code}",
+                    physicalMonitor.szPhysicalMonitorDescription, GetLastError()
+                );
+                logger.LogError("Gamma ramp not supported by the monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
+
+
+                if (physicalMonitor.szPhysicalMonitorDescription.StartsWith("Generic"))
+                {
+                    logger.LogError(
+                        "The monitor {name} may be a TV, in which case the TV manufacturer does not support programmatically setting brightness. If it's a monitor, it may have failed initializing with Windows. Try turning the monitor off and on again while Windows is running to see if the issue persists.",
+                        physicalMonitor.szPhysicalMonitorDescription
+                    );
+                }
+            }
+
+            DestroyPhysicalMonitors(physicalMonitorsCount, physicalMonitors);
+            return true;
+        }, IntPtr.Zero);
+    }
+
+    public void PrintConfiguration()
+    {
+        foreach (var monitor in Monitors)
+        {
+            if (monitor.InitialGamma is not null)
+            {
+                logger.LogInformation("Using gamma ramp for monitor: {name}", monitor.Description);
+            }
+            else
+            {
+                logger.LogInformation(
+                    "Using DDC for monitor, values(current, min, max): {name}, ({current}, {min}, {max})",
+                    monitor.Description, monitor.InitialValue, monitor.MinValue, monitor.MaxValue
+                );
+            }
+        }
+    }
+
     [MethodImpl(MethodImplOptions.AggressiveInlining | MethodImplOptions.AggressiveOptimization)]
     private bool SetBrightness(MonitorInfo monitor, float brightness)
     {
         if (monitor.InitialGamma is { } initialGamma)
         {
-            var currentGama = monitor.CurrentGama!.Value;
+            var currentGama = monitor.CurrentGamma!.Value;
 
             for (ushort i = 0; i < 256; i++)
             {
@@ -130,14 +248,14 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
             uint physicalMonitorsCount = 0;
             if (!GetNumberOfPhysicalMonitorsFromHMONITOR(hMonitor, ref physicalMonitorsCount))
             {
-                logger.LogCritical("Cannot get monitor count");
+                logger.LogDebug("Cannot get monitor count, error code: {code}", GetLastError());
                 return true;
             }
 
             var physicalMonitors = new PhysicalMonitor[physicalMonitorsCount];
             if (!GetPhysicalMonitorsFromHMONITOR(hMonitor, physicalMonitorsCount, physicalMonitors))
             {
-                logger.LogCritical("Cannot get monitor handle");
+                logger.LogDebug("Cannot get physical monitors from HMONITOR, error code: {code}", GetLastError());
                 return true;
             }
 
@@ -151,7 +269,7 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
                     && GetMonitorBrightness(physicalMonitor.hPhysicalMonitor, ref minValue, ref currentValue, ref maxValue)
                 )
                 {
-                    logger.LogInformation("Using DDC/CI for monitor, brightness(initial/min/max): {name}, {initial}/{min}/{max}",
+                    logger.LogDebug("Using DDC for monitor, brightness(initial/min/max): {name}, {initial}/{min}/{max}",
                         physicalMonitor.szPhysicalMonitorDescription, currentValue, minValue, maxValue);
                     var info = new MonitorInfo
                     {
@@ -165,22 +283,26 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
                     continue;
                 }
 
-                logger.LogDebug("DDC/CI not supported, trying gamma ramp, for monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
+                logger.LogDebug("DDC not supported, trying gamma ramp, for monitor, error code: {name}, {code}", physicalMonitor.szPhysicalMonitorDescription,
+                    GetLastError());
+
                 var gammaRamp = new GammaRamp();
                 if (GetDeviceGammaRamp(physicalMonitor.hPhysicalMonitor, ref gammaRamp))
                 {
-                    logger.LogInformation("Using gamma ramp for monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
+                    logger.LogDebug("Using gamma ramp for monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
                     var info = new MonitorInfo
                     {
                         Description = physicalMonitor.szPhysicalMonitorDescription,
                         Handle = physicalMonitor.hPhysicalMonitor,
-                        InitialGamma = gammaRamp
+                        InitialGamma = gammaRamp,
+                        CurrentGamma = new GammaRamp()
                     };
                     monitors.Add(info);
                     continue;
                 }
 
-                logger.LogError("DDC/CI and gamma ramp not supported, ignoring monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
+                logger.LogError("DDC and gamma ramp not supported, ignoring monitor: {name}", physicalMonitor.szPhysicalMonitorDescription);
+
                 DestroyPhysicalMonitor(physicalMonitor.hPhysicalMonitor);
             }
 
@@ -188,6 +310,7 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
         }, IntPtr.Zero);
 
         Monitors = monitors;
+        UpdateBrightness(1.0f);
     }
 
     public void Dispose()
@@ -205,37 +328,4 @@ public class WindowsExternalMonitorBrightnessChanger : IBrightnessChanger
             DestroyPhysicalMonitors((uint)monitorArray.Length, monitorArray);
         }
     }
-
-    #region Classes
-
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
-    private struct PhysicalMonitor
-    {
-        public IntPtr hPhysicalMonitor;
-
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-        public string szPhysicalMonitorDescription;
-    }
-
-    [StructLayout(LayoutKind.Sequential)]
-    private struct Rect
-    {
-        public int left;
-        public int top;
-        public int right;
-        public int bottom;
-    }
-
-    private class MonitorInfo
-    {
-        public string Description { get; set; }
-        public uint MinValue { get; set; }
-        public uint MaxValue { get; set; }
-        public IntPtr Handle { get; set; }
-        public uint InitialValue { get; set; }
-        public GammaRamp? InitialGamma { get; set; }
-        public GammaRamp? CurrentGama { get; }
-    }
-
-    #endregion
 }
